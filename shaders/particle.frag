@@ -6,5 +6,5 @@ void main()
     vec2 p = gl_PointCoord * 2.0 - 1.0;
     if(dot(p,p) > 1.0)
         discard;
-    FragColor = vec4(0.2,0.0,1.0,1.0);
+    FragColor = vec4(0.2,0.5,1.0,1.0);
 }

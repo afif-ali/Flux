@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(lib/glfw-3.4)
 
-include_directories(${PROJECT_NAME} lib/glad/include/ lib/glfw-3.4/include/lib/imgui lib/ src/)
+include_directories(${PROJECT_NAME} lib/glad/include/ lib/glfw-3.4/include/ lib/imgui lib/ src/)
 
 
 file(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp")

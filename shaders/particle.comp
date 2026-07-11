@@ -1,9 +1,11 @@
 #version 460 core
 layout(local_size_x = 256) in;
 
+
 struct Particle
 {
     vec2 position;
+    vec2 velocity;
 };
 
 layout(std430, binding = 0) buffer ParticleBuffer
@@ -11,14 +13,52 @@ layout(std430, binding = 0) buffer ParticleBuffer
     Particle particles[];
 };
 
+
+const float gravity = 980.0f;
+const float collisionDamping = 0.8f;
+
+uniform float deltaTime;
+uniform vec2 boundSize;
+uniform float particleRadius;
+
+void ResolveCollisions(uint id)
+{
+    float left = particleRadius;
+    float right = boundSize.x - particleRadius;
+
+    float bottom = particleRadius;
+    float top = boundSize.y - particleRadius;
+
+    if (particles[id].position.x < left)
+    {
+        particles[id].position.x = left;
+        particles[id].velocity.x *= -1.0 * collisionDamping;
+    }
+    else if (particles[id].position.x > right)
+    {
+        particles[id].position.x = right;
+        particles[id].velocity.x *= -1.0 * collisionDamping;
+    }
+    if (particles[id].position.y < bottom)
+    {
+        particles[id].position.y = bottom;
+        particles[id].velocity.y *= -1.0 * collisionDamping;
+    }
+    else if (particles[id].position.y > top)
+    {
+        particles[id].position.y = top;
+        particles[id].velocity.y *= -1.0 * collisionDamping;
+    }
+}
+
 void main()
 {
     uint id = gl_GlobalInvocationID.x;
     if (id >= particles.length())
         return;
 
-    particles[id].position.y -= 0.0001;
-
-    if(particles[id].position.y < -1.0)
-        particles[id].position.y = 1.;
+    particles[id].velocity += vec2(0.0, -1.0) * gravity * deltaTime;
+    particles[id].position += particles[id].velocity * deltaTime;
+    ResolveCollisions(id);
 }
+
